@@ -13,31 +13,6 @@ token = config.telebot_token
 bot = telebot.TeleBot(token)
 
 
-def startgpt(message):
-    data = bot.send_message(message.chat.id, 'Привет, я ChatGPT от OpenAI. Ты можешь задать мне вопрос или просто '
-                                             'поговорить.\nПримеры:\n"Напиши Telegram бота"\n"Что лучше, '
-                                             'Western Digital или Kingston"')
-    bot.register_next_step_handler(data, chatgpt2)
-
-
-def chatgpt(message):
-    keyboard = types.InlineKeyboardMarkup()
-    button1 = types.InlineKeyboardButton(text="Стоп", callback_data="stopgpt")
-    keyboard.add(button1)
-    data = bot.send_message(message.chat.id, completion[message.chat.id]['choices'][0]['message']['content'], reply_markup=keyboard)
-    bot.register_next_step_handler(data, chatgpt2)
-
-
-def chatgpt2(message):
-    text[message.chat.id] = message.text
-    completion[message.chat.id] = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": text[message.chat.id]}]
-    )
-    print(completion[message.chat.id])
-    chatgpt(message)
-
-
 @bot.message_handler(commands=["start"])
 def start(message):
     repkey = types.ReplyKeyboardMarkup(row_width=1)
@@ -55,13 +30,50 @@ def start(message):
 
 @bot.message_handler(commands=["help"])
 def helpme(message):
-    bot.send_message(message.chat.id, "Этот бот основан на DALL-E 2 компании openAI и использует официальный API "
-                                      "openAI. Данный бот разработан одним человеком и не приследует коммерческих "
-                                      "целей.\nКоманды бота:\n/pay - поддержать разработчика\n/prompt - сгенерировать "
-                                      "изображение\n/help - вывести это сообщение")
+    bot.send_message(message.chat.id, "Этот бот bспользует официальный API компании openAI"
+                                      ". Данный бот разработан одним человеком и не приследует коммерческих "
+                                      "целей.\nКоманды бота:\n/pay - поддержать разработчика\n/dalle - запустить "
+                                      "нейросеть DALL-E\n/chatgpt - запустить нейросеть ChatGPT\n/help - вывести это "
+                                      "сообщение")
 
 
-@bot.message_handler(commands=['prompt'])
+@bot.message_handler(commands=['chatgpt'])
+def startgpt(message):
+    data = bot.send_message(message.chat.id, 'Привет, я ChatGPT от OpenAI. Ты можешь задать мне вопрос или просто '
+                                             'поговорить.\nПримеры:\n"Напиши Telegram бота"\n"Что лучше, '
+                                             'Western Digital или Kingston?"')
+    bot.register_next_step_handler(data, chatgpt2)
+
+
+def chatgpt(message):
+    repkey = types.ReplyKeyboardMarkup(row_width=1)
+    stop = types.KeyboardButton('Остановить ChatGPT⛔')
+    repkey.add(stop)
+    data = bot.send_message(message.chat.id, completion[message.chat.id]['choices'][0]['message']['content'],
+                            reply_markup=repkey)
+    bot.register_next_step_handler(data, chatgpt2)
+
+
+def chatgpt2(message):
+    global completion
+    text[message.chat.id] = message.text
+    if text[message.chat.id] == 'Остановить ChatGPT⛔':
+        start(message)
+        return
+    else:
+        pass
+    try:
+        completion[message.chat.id] = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": text[message.chat.id]}]
+        )
+    except openai.error.RateLimitError:
+        bot.send_message(message.chat.id, "Возникли проблемы с API, попробуйте позже")
+    print(completion[message.chat.id])
+    chatgpt(message)
+
+
+@bot.message_handler(commands=['dalle'])
 def prompt(message):
     data = bot.send_message(message.chat.id, "Введи свой запрос для генерации изображения")
     bot.register_next_step_handler(data, number)
@@ -149,9 +161,6 @@ def callback_query(call):
     elif call.data == "gpt":
         bot.answer_callback_query(callback_query_id=call.id, text="ChatGPT запускается...")
         startgpt(call.message)
-    elif call.data == "stopgpt":
-        bot.answer_callback_query(callback_query_id=call.id, text="ChatGPT остановлен")
-        start(call.message)
 
 
 if __name__ == '__main__':
