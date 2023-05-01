@@ -49,6 +49,7 @@ def chatgpt(message):
     repkey = types.ReplyKeyboardMarkup(row_width=1)
     stop = types.KeyboardButton('Остановить ChatGPT⛔')
     repkey.add(stop)
+    bot.delete_message(message.chat.id, message_id=msg_id)
     data = bot.send_message(message.chat.id, completion[message.chat.id]['choices'][0]['message']['content'],
                             reply_markup=repkey)
     bot.register_next_step_handler(data, chatgpt2)
@@ -63,6 +64,9 @@ def chatgpt2(message):
     else:
         pass
     try:
+        msg = bot.send_message(message.chat.id, "ChatGPT печатает...")
+        global msg_id
+        msg_id = msg.message_id
         completion[message.chat.id] = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": text[message.chat.id]}]
