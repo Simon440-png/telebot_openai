@@ -1,11 +1,11 @@
-#  Telegram-openai - это...
-### Исходный код телеграм бота, который использует API компании OpenAI.
+# Telegram-openai is...
+### Source code for a telegram bot that uses the OpenAI API.
 _______________________________________
-#### Перед тем как запускать скрипт, вам нужно установить необходимые модули
+#### Before running the script, you need to install the necessary modules
 >pip install pyTelegramBotAPI openai
-#### Далее вам необходимо изменить файл config.py и внести туда свои правки.
->openai_token = "Ваш токен OpenAI"\
->telebot_token = "Токен вашего телеграм бота"
+#### Next, you need to modify the config.py file and make your changes there.
+>openai_token = "Your OpenAI token"\
+>telebot_token = "Your telegram bot token"
 ______________________________________________________
-#### Готово! Можете запускать код и пользоваться ботом!
-# Внимание! Бот находится на стадии бета-тестирования и готов к правкам
+#### Ready! You can run the code and use the bot!
+# Attention! The bot is in beta testing and is ready for editing
