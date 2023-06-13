@@ -10,7 +10,7 @@ _______________________________________
 >panel_token = "Your panel Telegram Bot token"\
 >dostup_cost = "Bot access price"
 ______________________________________________________
-####Than, you may run setup.sh to move some files in systemd directory and your code will start automaticly!
+#### Than, you may run setup.sh to move some files in systemd directory and your code will start automaticly!
 ______________________________________________________
 
 # Attention! The bot is in beta testing and is ready for editing
