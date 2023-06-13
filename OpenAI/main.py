@@ -53,7 +53,11 @@ def start(message):
     # callback_data="podr") keyboard.add(button1) bot.send_message(message.chat.id, 'У вас не приобретён доступ!'
     # 'Чтобы купить его нажмите на кнопку "Подробнее"', reply_markup=keyboard)
     else:
-        bot.send_message(message.chat.id, "You have not purchased access to our bot, you can purchase it by writing @Karlet_y")
+        keyboard = types.InlineKeyboardMarkup()
+        button1 = types.InlineKeyboardButton(text="Trial period", callback_data="trial")
+        keyboard.add(button1)
+        bot.send_message(message.chat.id, "You have not purchased access to our bot, you can purchase it by writing @Karlet_y or take a trial period of 3 days",
+                         reply_markup=keyboard)
 
 
 def podr(message):
@@ -68,8 +72,11 @@ def rate(message):
     if get_access_status(message.from_user.id):
         bot.send_message(message.chat.id, "In the form below, you can leave a review about our bot for further transfer to its developers: https://forms.gle/AQi1jYNCUkYVVjmX9")
     else:
-        bot.send_message(message.chat.id, "You have not purchased access to our bot, you can purchase it by writing @Karlet_y")
-
+        keyboard = types.InlineKeyboardMarkup()
+        button1 = types.InlineKeyboardButton(text="Trial period", callback_data="trial")
+        keyboard.add(button1)
+        bot.send_message(message.chat.id, "You have not purchased access to our bot, you can purchase it by writing @Karlet_y or take a trial period of 3 days",
+                         reply_markup=keyboard)
 
 @bot.message_handler(commands=["send"])
 def send(message):
@@ -95,8 +102,11 @@ def helpme(message):
     if get_access_status(message.from_user.id):
         bot.send_message(message.chat.id, "This bot uses the official openAI API. This bot is developed by one person and does not serve commercial purposes.\nBot commands:\n/rate - leave feedback about the bot\n/help - display this message\n/start - display a welcome message or start the bot")
     else:
-        bot.send_message(message.chat.id, "You have not purchased access to our bot, you can purchase it by writing @Karlet_y")
-
+        keyboard = types.InlineKeyboardMarkup()
+        button1 = types.InlineKeyboardButton(text="Trial period", callback_data="trial")
+        keyboard.add(button1)
+        bot.send_message(message.chat.id, "You have not purchased access to our bot, you can purchase it by writing @Karlet_y or take a trial period of 3 days",
+                         reply_markup=keyboard)
 
 def startgpt(message):
     data = bot.send_message(message.chat.id, 'Hi, I am ChatGPT by OpenAI. You can ask me a question or just talk.\nExamples:\n"Write a Telegram bot"\n"Which is better, Western Digital or Kingston?"')
@@ -190,6 +200,15 @@ def referal(message):
                                       parse_mode="Markdown")
 
 
+def trial_per(message):
+    if trial_add(message.chat.id):
+        bot.send_message(message.chat.id, f"Super! Your trial period is activated! You will be able to use our bot for 3 days, after which you will need to purchase access for further use of the bot")
+        os.system("systemctl restart main-beta.service")
+        bot.send_message(message.chat.id, "Enter /start for further use")
+    else:
+        bot.send_message(message.chat.id, "You already have a trial period activated!")
+
+
 @bot.message_handler(func=lambda call: True)
 def echo_all(message):
     if get_access_status(message.from_user.id):
@@ -209,8 +228,11 @@ def echo_all(message):
             referal(message)
 
     else:
-        bot.send_message(message.chat.id, "You have not purchased access to our bot, you can purchase it by writing "
-                                          "@Karlet_y")
+        keyboard = types.InlineKeyboardMarkup()
+        button1 = types.InlineKeyboardButton(text="Trial period", callback_data="trial")
+        keyboard.add(button1)
+        bot.send_message(message.chat.id, "You have not purchased access to our bot, you can purchase it by writing @Karlet_y or take a trial period of 3 days",
+                         reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -248,3 +270,4 @@ def callback_query(call):
 
 if __name__ == '__main__':
     bot.infinity_polling()
+
