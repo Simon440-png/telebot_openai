@@ -39,6 +39,32 @@ def get_access_status_admin(user_id):
     return bool(cursor.fetchone())
 
 
+def trial_add(user_id):
+    cursor.execute("SELECT * FROM trial where id=?", (str(user_id),))
+    result = cursor.fetchone()
+    if result:
+        return False
+    join_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute("INSERT INTO trial (id, join_time) VALUES (?, ?)", (str(user_id), str(join_time),))
+    conn.commit()
+    return True
+
+
+def trial_check(user_id):
+    cursor.execute("SELECT * FROM trial where id=?", (str(user_id),))
+    result = cursor.fetchone()
+    if result:
+        join_time = datetime.strptime(result[1], '%Y-%m-%d %H:%M:%S')
+        current_time = datetime.now()
+        trial_period = timedelta(hours=int(config.trial))
+        if current_time - join_time >= trial_period:
+            return False
+        else:
+            return True
+    else:
+        return False
+
+
 @bot.message_handler(commands=["start"])
 def start(message):
     if get_access_status(message.from_user.id):
