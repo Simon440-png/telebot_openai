@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenAI bot Panel
+After=multi-user.target
+
+[Service]
+WorkingDirectory=/OpenAI/
+Type=idle
+ExecStart=python3 /OpenAI/ex.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
